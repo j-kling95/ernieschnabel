@@ -1,17 +1,14 @@
 import java.awt.*;
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class World {
 
     private int size;
     private Fields[] fields;
+    private Platypus platypus;
+    private Fields platypusLocation;
 
-   //The world should be generated in 3 sizes: small, medium, large;
-   //Small: 25 fields, Medium: 64 Fields, Large: 100 Fields;
-   //Depending on the size, an ID system is drawn that assigns coordinates.
-   //I.e.: 36 (6x6 with IDs: 0_0, 0_1, 0_2, 0_3, 0_4, 1_0, 1_1 ....)
-   //64 (8x8)
-   //144 (12x12)
    //Movement will set the position property of the platypus to a new ID.
    //Don't know how to do this: A field should have a property of whether cheese is present or not (Boolean);
    //If cheese is present, the platypus eats the cheese and can go further; The cheese property is cleared from that field.
@@ -20,7 +17,7 @@ public class World {
     public World(){
         getSize();
         generateWorld();
-        populateWorld();
+        addPlatypus();
     }
 
     public void getSize(){
@@ -60,10 +57,10 @@ public class World {
         }
 
         if (size == 3) {
-            fields = new Fields[100];
+            fields = new Fields[144];
             int pointer = 0;
-            for (int i = 0; i < 10; i++) {
-                for (int j = 0; j < 10; j++) {
+            for (int i = 0; i < 12; i++) {
+                for (int j = 0; j < 12; j++) {
                     Point coordinate = new Point(i, j);
                     fields[pointer] = new Fields(coordinate);
                     //fields[pointer].printCoordinate();
@@ -79,16 +76,26 @@ public class World {
         int pointer = 0;
         int recursion = (int) Math.sqrt(fields.length);
 
+        clearScreen();
+        System.out.print("   ___  ____   ____   ____    ___  _____   __  __ __  ____    ____  ____     ___  _     \n");
+        System.out.print("  /  _]|    \\ |    \\ |    |  /  _]/ ___/  /  ]|  |  ||    \\  /    ||    \\   /  _]| |    \n");
+        System.out.print(" /  [_ |  D  )|  _  | |  |  /  [_(   \\_  /  / |  |  ||  _  ||  o  ||  o  ) /  [_ | |    \n");
+        System.out.print("|    _]|    /  |  |  | |  | |    _]\\__  |/  /  |  _  ||  |  ||     ||     ||    _]| |___\n");
+        System.out.print("|   [_ |    \\ |  |  | |  | |   [_ /  \\ /   \\_ |  |  ||  |  ||  _  ||  O  ||   [_ |     |\n");
+        System.out.print("|     ||  .  \\|  |  | |  | |     |\\    \\     ||  |  ||  |  ||  |  ||     ||     ||     |\n");
+        System.out.print("|_____||__|\\_||__|__||____||_____| \\___|\\____||__|__||__|__||__|__||_____||_____||_____|\n");
+        System.out.println();
+        System.out.println();
 
         for (int i = 0; i < (int) Math.sqrt(fields.length); i++) {
 
             while (Math.round(fields[i].getCoordinate().getX()) < recursion) {
                 if (fields[pointer].isHasPlatypus()) {
-                    System.out.print("| P");
+                    System.out.print("| P ");
                     recursion--;
                     pointer++;
                 } else {
-                    System.out.print("|  ");
+                    System.out.print("|   ");
                     recursion--;
                     pointer++;
                 }
@@ -97,7 +104,7 @@ public class World {
             System.out.print("|\n");
             for (int j = 0; j < Math.sqrt(fields.length); j++) {
 
-                System.out.print("---");
+                System.out.print("----");
             }
             System.out.print("-");
             System.out.println();
@@ -106,13 +113,90 @@ public class World {
         }
     }
 
-    public void populateWorld(){
-        int platypusIndex = (int)(Math.random() * fields.length);
-        System.out.println(platypusIndex);
+    public void addPlatypus() {
+        //configure field to have platypus  
+        int platypusIndex = (int) (Math.random() * fields.length);
+        System.out.println("The platypus starts in field : " + (platypusIndex + 1));
         fields[platypusIndex].setHasPlatypus(true);
-        // implement method to add cheese (or other things) to the fields in the field Array.
+        platypusLocation = fields[platypusIndex];
+        
+        //configure platypus to be linked to field
+        platypus = new Platypus();
+        platypus.setPosition(fields[platypusIndex]);
+    }    
 
-        // write method in fields class to implement rng on whether a field receives a cheese.
+    public void getMovement(){
+        while(true) {
+            Scanner scanner = new Scanner(System.in);
+            System.out.println("Which way do you want to go? ('a' = left, 'd' = right, 'w' = up, 's' = down");
+            String direction = scanner.next();
+
+            switch (direction) {
+                case "a":
+                    moveLeft();
+                    clearScreen();
+                    printWorld();
+                    break;
+                case "d":
+                    moveRight();
+                    clearScreen();
+                    printWorld();
+                    break;
+                case "w":
+                    moveUp();
+                    clearScreen();
+                    printWorld();
+                    break;
+                case "s":
+                    moveDown();
+                    clearScreen();
+                    printWorld();
+                    break;
+            }
+        }
+    }
+
+    public void moveLeft(){
+        int index = Arrays.asList(fields).indexOf(platypusLocation);
+        fields[index].setHasPlatypus(false);
+        fields[index-1].setHasPlatypus(true);
+        platypus.setPosition(fields[index-1]);
+        platypusLocation = fields[index-1];
+    }
+
+    public void moveRight(){
+        int index = Arrays.asList(fields).indexOf(platypusLocation);
+        fields[index].setHasPlatypus(false);
+        fields[index+1].setHasPlatypus(true);
+        platypus.setPosition(fields[index+1]);
+        platypusLocation = fields[index+1];
 
     }
+
+    public void moveUp(){
+        int index = Arrays.asList(fields).indexOf(platypusLocation);
+        fields[index].setHasPlatypus(false);
+        fields[index - (int) Math.sqrt(fields.length)].setHasPlatypus(true);
+        platypus.setPosition(fields[index - (int) Math.sqrt(fields.length)]);
+        platypusLocation = fields[index - (int) Math.sqrt(fields.length)];
+    }
+
+    public void moveDown(){
+        int index = Arrays.asList(fields).indexOf(platypusLocation);
+        fields[index].setHasPlatypus(false);
+        fields[index + (int) Math.sqrt(fields.length)].setHasPlatypus(true);
+        platypus.setPosition(fields[index + (int) Math.sqrt(fields.length)]);
+        platypusLocation = fields[index + (int) Math.sqrt(fields.length)];
+    }
+
+    public static void clearScreen() {
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
+    }
+
+    // implement method to add cheese (or other things) to the fields in the field Array.
+
+    // write method in fields class to implement rng on whether a field receives a cheese.
+
+
 }

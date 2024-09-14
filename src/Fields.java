@@ -21,10 +21,18 @@ public class Fields {
        this.coordinate = coordinate;
     }
 
+    public int getY(){
+       return (int) this.coordinate.getY();
+    }
+
+    public int getX(){
+        return (int) this.coordinate.getX();
+    }
+
     public void setHasPlatypus(boolean hasPlatypus) {
         this.hasPlatypus = hasPlatypus;
     }
-
+    
     public boolean isHasPlatypus() {
         return hasPlatypus;
     }

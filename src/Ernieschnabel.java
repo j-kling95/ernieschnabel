@@ -3,7 +3,7 @@ public class Ernieschnabel {
 
         World world = new World();
         world.printWorld();
-
+        world.getMovement();
 
     }
 }
