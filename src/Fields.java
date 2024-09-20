@@ -13,12 +13,12 @@ public class Fields {
         return coordinate;
     }
 
-    public void printCoordinate() {
-        System.out.println("Coordinate: " + (int)Math.round(coordinate.getX()) + "/" + (int)Math.round(coordinate.getY()));
-    }
-
     public void setCoordinate(Point coordinate){
        this.coordinate = coordinate;
+    }
+
+    public void printCoordinate() {
+        System.out.println("Coordinate: " + (int)Math.round(coordinate.getX()) + "/" + (int)Math.round(coordinate.getY()));
     }
 
     public int getY(){
@@ -33,7 +33,7 @@ public class Fields {
         this.hasPlatypus = hasPlatypus;
     }
     
-    public boolean isHasPlatypus() {
+    public boolean getHasPlatypus() {
         return hasPlatypus;
     }
 }
